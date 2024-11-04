@@ -1,5 +1,7 @@
 '''Import the requests library to handle HTTP requests'''
 import requests  
+'''Import json library to format the output'''
+import json
 
 def emotion_detector(text_to_analyze):
     '''emotion_detector function accept input "text_to_analyze" and analyze it using Watson AI Library'''
@@ -11,6 +13,12 @@ def emotion_detector(text_to_analyze):
     header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}  
     # Send a POST request to the API with the text and headers
     response = requests.post(url, json = myobj, headers=header)  
-
-    return response.text
+    #format the response text to json and dictionary
+    formatted_response = json.loads(response.text)
+    emotion_dict = formatted_response['emotionPredictions'][0]['emotion']
+    #find the dominant emotion
+    dominant_emotion = max(emotion_dict,key=emotion_dict.get)
+    #add dominant emotion to dictionary
+    emotion_dict['dominant_emotion'] = dominant_emotion
+    return emotion_dict
 
