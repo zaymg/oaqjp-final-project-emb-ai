@@ -6,32 +6,35 @@
 from flask import Flask, render_template, request
 
 
-# Import the sentiment_analyzer function from the package created: TODO
-from SentimentAnalysis.sentiment_analysis import sentiment_analyzer
+# Import the sentiment_analyzer function from the package created: 
+from EmotionDetection.emotion_detection import emotion_detector
 
-#Initiate the flask app : TODO
-app = Flask("Sentiment Analyzer")
+#Initiate the flask app :
+app = Flask("Emotion Detector")
 
-@app.route("/sentimentAnalyzer")
-def sent_analyzer():
+@app.route("/emotionDetector")
+def emo_detector():
     '''Retrieve the text to analyze from the request arguments'''
     text_to_analyze = request.args.get('textToAnalyze')
 
     # Pass the text to the sentiment_analyzer function and store the response
-    response = sentiment_analyzer(text_to_analyze)
+    response = emotion_detector(text_to_analyze)
 
-    # Extract the label and score from the response
-    label = response['label']
-    score = response['score']
-
-    # Check if the label is None, indicating an error or invalid input
-    if label is None:
-        return "Invalid input! Try again."
-    # Return a formatted string with the sentiment label and score
-    given_text = "The given text has been identified as"
-    return f"{given_text} {label.split('_')[1]} with a score of {score}."
+    # Extract the dominant emotion from the response
+    dom_emo = response['dominant_emotion']
+    result_text = ''
+    for k in response:
+        result_text = result_text + k + ":" + str(response[k]) + ","
+    #replace last comma with full stop
+    result_text = result_text[0:len(result_text)-1] + "."
+        
+    given_text = "For the given statement, the system response is"
+    return f"{given_text} {result_text} The dominant emotion is {dom_emo}"
 
 @app.route("/")
 def render_index_page():
     '''return the render index page'''
     return render_template('index.html')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
