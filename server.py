@@ -22,14 +22,19 @@ def emo_detector():
 
     # Extract the dominant emotion from the response
     dom_emo = response['dominant_emotion']
-    result_text = ''
-    for k in response:
-        result_text = result_text + k + ":" + str(response[k]) + ","
-    #replace last comma with full stop
-    result_text = result_text[0:len(result_text)-1] + "."
-        
-    given_text = "For the given statement, the system response is"
-    return f"{given_text} {result_text} The dominant emotion is {dom_emo}"
+    if dom_emo is None:
+        return_text = "Invalid text! Please try again."
+    else:
+        result_text = ''
+        for k in response:
+            if (k != 'dominant_emotion'):
+                result_text = result_text + k + ": " + str(response[k]) + ", "
+        #replace last comma with full stop
+        result_text = result_text[0:len(result_text)-2] + ". "
+            
+        given_text = "For the given statement, the system response is"
+        return_text = f"{given_text} {result_text} The dominant emotion is {dom_emo}."
+    return return_text
 
 @app.route("/")
 def render_index_page():
